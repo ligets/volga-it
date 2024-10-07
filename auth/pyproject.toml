@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "volga-it account microservise"
+version = "0.1.0"
+description = "Сервис аккаунтов для олимпиады по backend разработки"
+authors = ["ligets <legen2a208@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.115.0"
+uvicorn = "^0.31.0"
+poetry = "^1.8.3"
+python-jose = "^3.3.0"
+pydantic-settings = "^2.5.2"
+python-dotenv = "^1.0.1"
+asyncpg = "^0.29.0"
+alembic = "^1.13.3"
+passlib = "^1.7.4"
+bcrypt = "4.0.1"
+datetime = "^5.5"
+python-multipart = "^0.0.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

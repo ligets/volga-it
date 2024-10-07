@@ -1,0 +1,10 @@
+.git/
+.gitignore
+/certificates/
+
+.vscode/
+.idea/
+
+__pycache__/
+*.pyc
+
