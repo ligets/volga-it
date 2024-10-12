@@ -1,8 +1,29 @@
 # version: "3.8"
 
 services:
-  database:
+  rabbitmq:
+    image: "rabbitmq:4-management"
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - work
+
+  redis:
+    image: "redis:alpine"
+    container_name: redis
+    volumes:
+      - redis_data:/var/lib/redis/data
+    command: redis-server --bind redis 
+    ports:
+      - "6379:6379"
+    networks:
+      - work
+
+  postgres:
     image: postgres:15-alpine
+    container_name: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data/
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -18,14 +39,13 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     container_name: pga
-    restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: test@admin.com
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "5050:80"
     depends_on:
-      - database
+      - postgres
     networks:
       - work
 
@@ -36,27 +56,30 @@ services:
     ports:
       - "8081:8081"
     depends_on:
-      - database
+      - rabbitmq
+      - postgres
+      - redis
     env_file:
       - ./auth/.env
     networks:
       - work
 
-  hospitals_microservice:
-    build:
-      context: ./hospitals
-    container_name: hospitals_microservice
-    ports:
-      - "8082:8082"
-    depends_on:
-      - database
-    env_file:
-      - ./hospitals/.env
-    networks:
-      - work
+  # hospitals_microservice:
+  #   build:
+  #     context: ./hospitals
+  #   container_name: hospitals_microservice
+  #   ports:
+  #     - "8082:8082"
+  #   depends_on:
+  #     - postgres
+  #   env_file:
+  #     - ./hospitals/.env
+  #   networks:
+  #     - work
 
 networks:
   work:
 
 volumes:
   postgres_data:
+  redis_data:

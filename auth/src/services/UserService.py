@@ -30,7 +30,10 @@ class UserService:
 
     @classmethod
     async def get_user(cls, user_id: uuid.UUID, session: AsyncSession) -> Optional[any]:
-        return await UserDAO.find_one_or_none(session, id=user_id)
+        user = await UserDAO.find_one_or_none(session, id=user_id)
+        if not user or user.is_deleted:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        return user
 
     @classmethod
     async def update_user(cls, user_id: uuid.UUID, user: UserUpdate | UserUpdateAdmin, session: AsyncSession):
@@ -69,7 +72,7 @@ class UserService:
             limit: int,
             session: AsyncSession
     ):
-        filters = [RoleModel.name == 'Doctor']
+        filters = [RoleModel.name == 'Doctor', UserModel.is_deleted == False]
         if nameFilter:
             filters.append(func.concat(UserModel.firstName, " ", UserModel.lastName).ilike(f"%{nameFilter}%"))
 
@@ -79,6 +82,3 @@ class UserService:
             offset=offset,
             limit=limit,
         )
-
-
-

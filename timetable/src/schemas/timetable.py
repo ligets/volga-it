@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 from fastapi import HTTPException
 from pydantic import BaseModel, Field, field_validator
@@ -16,7 +16,7 @@ class TimetableCreate(BaseModel):
     @classmethod
     def check_date_format(cls, v):
         if v.minute % 30 != 0 or v.second != 0:
-            raise ValueError('Минуты должно быть кратное 30 минутам, а секунды всегда равны 0')
+            raise ValueError('Минуты должны быть кратны 30 минутам, а секунды всегда равны 0')
         return v
 
     @field_validator('to')
@@ -46,5 +46,4 @@ class TimetableResponse(BaseModel):
 
     class Config:
         from_attributes = True
-
 

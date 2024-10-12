@@ -1,8 +1,13 @@
+from datetime import datetime, timedelta
+import uuid
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import and_, or_
 import httpx
 
 from src.daos.timetable import TimetableDAO
+from src.dependencies import validate_doctor, validate_room_hospital, validate_hospital
+from src.models.timetable import TimetableModel
 from src.schemas.timetable import TimetableCreate
 import json
 
@@ -10,32 +15,121 @@ import json
 class TimetableService:
 
     @classmethod
-    async def create_timetable(cls, timetable: TimetableCreate, session: AsyncSession, token: str):
-        async with httpx.AsyncClient() as client:
-            try:
-                doc_response = await client.get(
-                    f'http://localhost:8081/api/Doctors/{timetable.doctorId}',
-                    headers={"Authorization": f"Bearer {token}"},
-                )
-                doc_response.raise_for_status()
+    async def create_timetable(cls, timetable: TimetableCreate, session: AsyncSession):
+        await validate_doctor(timetable.doctorId)
+        await validate_room_hospital(timetable.hospitalId, timetable.room)
 
-                hospital_response = await client.get(
-                    f'http://localhost:8082/api/Hospitals/{timetable.hospitalId}/Rooms',
-                    headers={"Authorization": f"Bearer {token}"},
-                )
-                hospital_response.raise_for_status()
-                rooms = hospital_response.json()
+        return await TimetableDAO.add(session, timetable)
 
-                room = next((room.get('name') for room in rooms if room.get('name') == timetable.room), None)
-                if not room:
-                    raise HTTPException(status_code=404, detail='Room not found.')
+    @classmethod
+    async def update_timetable(cls, timetable_id: uuid.UUID, timetable: TimetableCreate, session: AsyncSession):
+        # TODO: Сделать проверку на записи, если они существуют то отменить изменение
+        await validate_doctor(timetable.doctorId)
+        await validate_room_hospital(timetable.hospitalId, timetable.room)
 
-                return await TimetableDAO.add(session, timetable)
+        return await TimetableDAO.update(session, TimetableModel.id == timetable_id, obj_in=timetable)
 
-            except httpx.HTTPStatusError as exc:
-                raise HTTPException(
-                    status_code=exc.response.status_code,
-                    detail=json.loads(exc.response.text).get('detail')
-                )
+    @classmethod
+    async def delete_timetable(cls, timetable_id: uuid.UUID, session: AsyncSession):
+        # TODO: Сделать удаление записей
+        await TimetableDAO.delete(session, TimetableModel.id == timetable_id)
 
+    @classmethod
+    async def delete_doctor_timetable(cls, doctor_id: uuid.UUID, session: AsyncSession):
+        # TODO: при удаление доктора или изменения его роли удалять его расписание
+        await TimetableDAO.delete(session, TimetableModel.doctorId == doctor_id)
+
+    @classmethod
+    async def delete_hospital_timetable(cls, hospital_id: uuid.UUID, session: AsyncSession):
+        # TODO: при удалении больницы или изменении ее адреса удалять ее расписание
+        await TimetableDAO.delete(session, TimetableModel.hospitalId == hospital_id)
+
+    @classmethod
+    async def get_hospital_timetable(
+            cls,
+            hospital_id: uuid.UUID,
+            from_datetime: datetime,
+            to: datetime,
+            session: AsyncSession
+    ):
+        await validate_hospital(hospital_id)
+        if to.time() == datetime.min.time():
+            to += timedelta(days=1)
+        return await TimetableDAO.fild_all(
+            session,
+            and_(
+                TimetableModel.hospitalId == hospital_id,
+                TimetableModel.to > from_datetime,
+                TimetableModel.from_column <= to
+            )
+        )
+
+    @classmethod
+    async def get_doctor_timetable(
+            cls,
+            doctor_id: uuid.UUID,
+            from_datetime: datetime,
+            to: datetime,
+            session: AsyncSession
+    ):
+        await validate_doctor(doctor_id)
+        if to.time() == datetime.min.time():
+            to += timedelta(days=1)
+        print(from_datetime, to)
+        return await TimetableDAO.fild_all(
+            session,
+            and_(
+                TimetableModel.doctorId == doctor_id,
+                TimetableModel.to > from_datetime,
+                TimetableModel.from_column <= to
+            )
+        )
+
+    @classmethod
+    async def get_hospital_room_timetable(
+            cls,
+            hospital_id: uuid.UUID,
+            room: str,
+            from_datetime: datetime,
+            to: datetime,
+            session: AsyncSession
+    ):
+        await validate_room_hospital(hospital_id, room)
+        if to.time() == datetime.min.time():
+            to += timedelta(days=1)
+        return await TimetableDAO.fild_all(
+            session,
+            and_(
+                TimetableModel.hospitalId == hospital_id,
+                TimetableModel.room == room,
+                TimetableModel.to > from_datetime,
+                TimetableModel.from_column <= to
+            )
+        )
+
+    @classmethod
+    async def get_talons(
+            cls,
+            timetable_id: uuid.UUID,
+            session: AsyncSession
+    ):
+        # TODO: Сделать проверку на уже забронированные талоны
+        timetable = await TimetableDAO.find_one_or_none(session, TimetableModel.id == timetable_id)
+        if not timetable:
+            raise HTTPException(status_code=404, detail='Timetable not found.')
+
+        talons = []
+        start_time = timetable.from_column
+        end_time = timetable.to
+
+        lock_appointments = {appoint.time for appoint in timetable.appointments}
+
+        while start_time < end_time:
+            if start_time in lock_appointments:
+                start_time += timedelta(minutes=30)
+                continue
+            talons.append(start_time)
+            start_time += timedelta(minutes=30)
+
+        return talons
 

@@ -1,7 +1,10 @@
 import uuid
+import time
 from typing import Optional
 
 from fastapi import APIRouter, Query, Depends
+from fastapi_cache.decorator import cache
+from fastapi_cache import FastAPICache
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import db
@@ -13,6 +16,7 @@ router = APIRouter()
 
 
 @router.get("", response_model=list[UserDb])
+@cache(expire=30)
 async def get_doctors_list(
         nameFilter: Optional[str] = None,
         offset: int = Query(..., alias="from"),
@@ -29,6 +33,7 @@ async def get_doctors_list(
 
 
 @router.get("/{id}", response_model=UserDb)
+@cache(expire=30)
 async def get_doctor_info(
         id: uuid.UUID,
         session: AsyncSession = Depends(db.get_async_session),

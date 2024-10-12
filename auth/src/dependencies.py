@@ -18,11 +18,13 @@ oauth2 = OAuth2PasswordBearer(tokenUrl='/api/Authentication/SignIn')
 
 async def validate_token(token: str = Depends(oauth2)):
     try:
-        jwt.decode(
+        decode = jwt.decode(
             token,
             settings.auth_jwt.public_key_path.read_text(),
             algorithms=settings.auth_jwt.algorithm
         )
+        if decode.get('is+deleted') == True:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has been revoked.")
         return token
     except ExpiredSignatureError:
         raise TokenExpiredException
@@ -38,7 +40,7 @@ async def get_current_user(token: str = Depends(oauth2), session: AsyncSession =
             algorithms=settings.auth_jwt.algorithm
         )
         user_id = payload.get("sub")
-        if user_id is None:
+        if user_id is None or payload.get('is_deleted') == True:
             raise InvalidToken
     except ExpiredSignatureError:
         raise TokenExpiredException

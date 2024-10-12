@@ -20,6 +20,8 @@ passlib = "^1.7.4"
 bcrypt = "4.0.1"
 datetime = "^5.5"
 python-multipart = "^0.0.12"
+aio-pika = "^9.4.3"
+fastapi-cache2 = {extras = ["redis"], version = "^0.2.2"}
 
 
 [build-system]

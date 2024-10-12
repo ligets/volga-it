@@ -1,7 +1,7 @@
 import uuid
 from typing import List
 
-from sqlalchemy import String, UUID
+from sqlalchemy import String, UUID, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from . import Base
@@ -17,6 +17,7 @@ class UserModel(Base):
     hashed_password: Mapped[str] = mapped_column(
         String(1024), nullable=False
     )
+    is_deleted: Mapped[bool] = mapped_column(Boolean, default=False)
 
     roles: Mapped[List["RoleModel"]] = relationship(
         "RoleModel",

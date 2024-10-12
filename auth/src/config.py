@@ -8,14 +8,18 @@ load_dotenv()
 
 BaseDir = Path(__file__).parent.parent
 
+POSTGRES_HOST: str = os.getenv('POSTGRES_HOST')
+POSTGRES_PORT: str = os.getenv('POSTGRES_PORT')
+POSTGRES_USER: str = os.getenv('POSTGRES_USER')
+POSTGRES_PASSWORD: str = os.getenv('POSTGRES_PASSWORD')
+POSTGRES_DB: str = os.getenv('POSTGRES_DB')
+RABBITMQ_HOST: str = os.getenv('RABBITMQ_HOST')
+RABBITMQ_USER: str = os.getenv('RABBITMQ_USER')
+RABBITMQ_PASSWORD: str = os.getenv('RABBITMQ_PASSWORD')
+REDIS_HOST: str = os.getenv('REDIS_HOST')
+
 ACCESS_TOKEN_EXPIRE_MIN = os.getenv('ACCESS_TOKEN_EXPIRE_MIN')
 REFRESH_TOKEN_EXPIRE_DAYS = os.getenv('REFRESH_TOKEN_EXPIRE_DAYS')
-
-POSTGRES_HOST = os.getenv('POSTGRES_HOST')
-POSTGRES_PORT = os.getenv('POSTGRES_PORT')
-POSTGRES_USER = os.getenv('POSTGRES_USER')
-POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
-POSTGRES_DB = os.getenv('POSTGRES_DB')
 
 
 class JWTSettings(BaseSettings):
@@ -32,6 +36,12 @@ class Settings(BaseSettings):
     POSTGRES_USER: str = POSTGRES_USER
     POSTGRES_PASSWORD: str = POSTGRES_PASSWORD
     POSTGRES_DB: str = POSTGRES_DB
+
+    RABBITMQ_HOST: str = RABBITMQ_HOST
+    RABBITMQ_USER: str = RABBITMQ_USER
+    RABBITMQ_PASSWORD: str = RABBITMQ_PASSWORD
+
+    REDIS_HOST: str = REDIS_HOST
 
     @property
     def POSTGRES_URL(self) -> str:

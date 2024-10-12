@@ -61,7 +61,8 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             stmt = insert(cls.model).values(**create_data).returning(cls.model)
             result = await session.execute(stmt)
             return result.scalars().first()
-        except SQLAlchemyError:
+        except SQLAlchemyError as e:
+            print(e)
             raise DatabaseException
         except Exception:
             raise UnknownDatabaseException

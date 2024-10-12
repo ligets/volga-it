@@ -32,11 +32,11 @@ def upgrade() -> None:
 
     session.execute(
         sa.text(f"""
-            INSERT INTO users (id, "username", "firstName", "lastName", "hashed_password") VALUES
-            ('{uuid.uuid4()}', 'admin', 'Иван', 'Иванов', '{admin_hash_password}'),
-            ('{uuid.uuid4()}', 'manager', 'Василий', 'Васильев', '{manager_hash_password}'),
-            ('{uuid.uuid4()}', 'doctor', 'Михаил', 'Михайлов', '{doctor_hash_password}'),
-            ('{uuid.uuid4()}', 'user', 'Петр', 'Петров', '{user_hash_password}')
+            INSERT INTO users (id, "username", "firstName", "lastName", "hashed_password", "is_deleted") VALUES
+            ('{uuid.uuid4()}', 'admin', 'Иван', 'Иванов', '{admin_hash_password}', FALSE),
+            ('{uuid.uuid4()}', 'manager', 'Василий', 'Васильев', '{manager_hash_password}', FALSE),
+            ('{uuid.uuid4()}', 'doctor', 'Михаил', 'Михайлов', '{doctor_hash_password}', FALSE),
+            ('{uuid.uuid4()}', 'user', 'Петр', 'Петров', '{user_hash_password}', FALSE)
         """)
     )
 

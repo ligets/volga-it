@@ -25,7 +25,7 @@ class AuthService:
     @classmethod
     async def sign_in(cls, username: str, password: str, session: AsyncSession) -> Token:
         user: UserModel = await UserDAO.find_one_or_none(session, username=username)
-        if user and is_valid_password(password, user.hashed_password):
+        if user and not user.is_deleted and is_valid_password(password, user.hashed_password):
             return await cls.create_token(user, session)
         raise InvalidCredentialsException
 
@@ -44,8 +44,10 @@ class AuthService:
         if datetime.now(timezone.utc) >= refresh_session.created_at + timedelta(seconds=refresh_session.expires_in):
             await RefreshSessionDAO.delete(session, RefreshSessionModel.refresh_token == token)
             raise TokenExpiredException
-
-        access_token = await cls._create_access_token(refresh_session.user_id)
+        user = await UserDAO.find_one_or_none(session, UserModel.id == refresh_session.user_id)
+        if not user or user.is_deleted:
+            raise InvalidToken
+        access_token = await cls._create_access_token(user)
         refresh_token = await cls._create_refresh_token()
         refresh_token_expires = timedelta(
             days=settings.auth_jwt.refresh_token_expire_days
@@ -91,6 +93,7 @@ class AuthService:
             'firsName': user.firstName,
             'lastName': user.lastName,
             'roles': [role.name for role in user.roles],
+            'is_deleted': user.is_deleted,
             'exp': datetime.utcnow() + timedelta(minutes=settings.auth_jwt.access_token_expire_minutes)
         }
 

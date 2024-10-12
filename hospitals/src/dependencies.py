@@ -10,7 +10,7 @@ async def validate_token(token: str = Depends(oauth2_scheme)):
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(
-                'http://accounts_microservice:8081/api/Authentication/Validate',
+                'http://localhost:8081/api/Authentication/Validate',
                 headers={"Authorization": f"Bearer {token}"},
             )
             response.raise_for_status()

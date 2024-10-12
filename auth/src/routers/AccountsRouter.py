@@ -1,6 +1,7 @@
 import uuid
 
 from fastapi import APIRouter, Depends, Query
+from fastapi_cache.decorator import cache
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.daos.UserDAO import UserDAO
@@ -30,6 +31,7 @@ async def update_user_info(
 
 
 @router.get("", response_model=list[UserDb])
+@cache(expire=30)
 async def get_list_users_info(
         offset: int = Query(..., alias="from"),
         count: int = Query(...),
@@ -64,5 +66,5 @@ async def delete_user_by_id(
         session: AsyncSession = Depends(db.get_async_session),
         admin: UserModel = Depends(get_current_admin),
 ):
-    await UserDAO.delete(session, UserModel.id == id)
+    await UserDAO.update(session, UserModel.id == id, obj_in={'is_deleted': True})
 

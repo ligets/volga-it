@@ -31,6 +31,7 @@ def upgrade() -> None:
                     sa.Column('firstName', sa.String(length=50), nullable=False),
                     sa.Column('lastName', sa.String(length=50), nullable=False),
                     sa.Column('hashed_password', sa.String(length=1024), nullable=False),
+                    sa.Column('is_deleted', sa.Boolean(), nullable=False),
                     sa.PrimaryKeyConstraint('id'),
                     sa.UniqueConstraint('username')
                     )
