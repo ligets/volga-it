@@ -61,21 +61,23 @@ class HospitalsDAO(BaseDAO[HospitalModel, HospitalCreateDB, HospitalUpdateDB]):
             update_data = obj_in.model_dump(exclude_unset=True)
 
         rooms = update_data.pop('rooms', None)
-        # try:
-        stmt = update(cls.model) \
-            .where(*where) \
-            .values(**update_data) \
-            .returning(cls.model) \
-            .options(selectinload(cls.model.rooms))
-        result = await session.execute(stmt)
-        hospital: HospitalModel = result.scalars().one_or_none()
-        if rooms and hospital:
-            await cls.update_rooms(session, rooms, hospital)
-        return hospital
-        # except SQLAlchemyError:
-        #     raise DatabaseException
-        # except Exception:
-        #     raise UnknownDatabaseException
+        try:
+            stmt = update(cls.model) \
+                .where(*where) \
+                .values(**update_data) \
+                .returning(cls.model) \
+                .options(selectinload(cls.model.rooms))
+            result = await session.execute(stmt)
+            hospital: HospitalModel = result.scalars().one_or_none()
+            if rooms and hospital:
+                await cls.update_rooms(session, rooms, hospital)
+            return hospital
+        except IntegrityError:
+            raise ConflictUniqueAttribute('ContactPhone is already taken.')
+        except SQLAlchemyError:
+            raise DatabaseException
+        except Exception:
+            raise UnknownDatabaseException
 
     @classmethod
     async def add(

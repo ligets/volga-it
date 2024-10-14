@@ -66,5 +66,5 @@ async def delete_user_by_id(
         session: AsyncSession = Depends(db.get_async_session),
         admin: UserModel = Depends(get_current_admin),
 ):
-    await UserDAO.update(session, UserModel.id == id, obj_in={'is_deleted': True})
+    await UserService.delete_user(id, session)
 

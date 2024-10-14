@@ -11,6 +11,10 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
 
+    RABBITMQ_HOST: str
+    RABBITMQ_USER: str
+    RABBITMQ_PASSWORD: str
+
     REDIS_HOST: str
 
     @property

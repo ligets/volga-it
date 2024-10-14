@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import db
-from src.dependencies import validate_token
+from src.dependencies import validate_token, get_current_user
 from src.exceptions.AuthExceptions import InvalidToken
 from src.schemas.UserSchemas import UserCreate
 from src.schemas.AuthSchemas import Token
@@ -40,9 +40,9 @@ async def sign_out(
 
 @router.get("/Validate")
 async def validate_token(
-        token: str = Depends(validate_token)
+        user: str = Depends(get_current_user)
 ):
-    return {"valid": True} if token else InvalidToken
+    return {"valid": True} if user else InvalidToken
 
 
 @router.post("/Refresh")

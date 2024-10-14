@@ -8,7 +8,7 @@ from fastapi_cache import FastAPICache
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import db
-from src.dependencies import validate_token
+from src.dependencies import validate_token, get_current_user
 from src.schemas.UserSchemas import UserDb
 from src.services.UserService import UserService
 
@@ -22,7 +22,7 @@ async def get_doctors_list(
         offset: int = Query(..., alias="from"),
         limit: int = Query(..., alias="count"),
         session: AsyncSession = Depends(db.get_async_session),
-        token: str = Depends(validate_token)
+        user: str = Depends(get_current_user)
 ):
     return await UserService.get_list_doctors(
         nameFilter=nameFilter,
@@ -37,6 +37,6 @@ async def get_doctors_list(
 async def get_doctor_info(
         id: uuid.UUID,
         session: AsyncSession = Depends(db.get_async_session),
-        token: str = Depends(validate_token)
+        user: str = Depends(get_current_user)
 ):
     return await UserService.get_doctor(id, session)

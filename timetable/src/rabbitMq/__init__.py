@@ -1,6 +1,8 @@
 import asyncio
 import json
 import uuid
+from functools import partial
+
 import aio_pika
 from fastapi import HTTPException
 
@@ -53,5 +55,3 @@ class RabbitMQBaseClient:
         channel = await self.connection.channel()
         callback_queue = await channel.declare_queue(auto_delete=True)
         return channel, callback_queue
-
-

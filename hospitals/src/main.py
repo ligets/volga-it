@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.config import settings
-from src.rabbitMq import consume_rabbitmq
+from src.rabbitMq.server import consume_rabbitmq
 from src.routers import all_routers
 
 

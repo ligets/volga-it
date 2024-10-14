@@ -19,5 +19,6 @@ class CreateAppointments(BaseModel):
 
 class CreateAppointmentsDB(BaseModel):
     timetable_id: uuid.UUID
+    user_id: uuid.UUID
     time: datetime
 

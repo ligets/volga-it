@@ -15,4 +15,9 @@ class TimetableModel(Base):
     to: Mapped[datetime.datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
     room: Mapped[str] = mapped_column(String, nullable=False)
 
-    appointments: Mapped[list["AppointmentModel"]] = relationship("AppointmentModel", back_populates="timetable",)
+    appointments: Mapped[list["AppointmentModel"]] = relationship(
+        "AppointmentModel",
+        back_populates="timetable",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )

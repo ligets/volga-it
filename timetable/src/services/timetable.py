@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+import time
+from datetime import datetime, timedelta, timezone
 import uuid
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,20 +24,21 @@ class TimetableService:
 
     @classmethod
     async def update_timetable(cls, timetable_id: uuid.UUID, timetable: TimetableCreate, session: AsyncSession):
-        # TODO: Сделать проверку на записи, если они существуют то отменить изменение
         await validate_doctor(timetable.doctorId)
         await validate_room_hospital(timetable.hospitalId, timetable.room)
-
+        timetable_db = await TimetableDAO.find_one_or_none(session, TimetableModel.id == timetable_id)
+        if not timetable_db:
+            raise HTTPException(status_code=404, detail='Timetable not found')
+        if timetable_db.appointments:
+            raise HTTPException(status_code=409, detail='Timetable already has appointments')
         return await TimetableDAO.update(session, TimetableModel.id == timetable_id, obj_in=timetable)
 
     @classmethod
     async def delete_timetable(cls, timetable_id: uuid.UUID, session: AsyncSession):
-        # TODO: Сделать удаление записей
         await TimetableDAO.delete(session, TimetableModel.id == timetable_id)
 
     @classmethod
     async def delete_doctor_timetable(cls, doctor_id: uuid.UUID, session: AsyncSession):
-        # TODO: при удаление доктора или изменения его роли удалять его расписание
         await TimetableDAO.delete(session, TimetableModel.doctorId == doctor_id)
 
     @classmethod
@@ -75,7 +77,6 @@ class TimetableService:
         await validate_doctor(doctor_id)
         if to.time() == datetime.min.time():
             to += timedelta(days=1)
-        print(from_datetime, to)
         return await TimetableDAO.fild_all(
             session,
             and_(
@@ -113,19 +114,20 @@ class TimetableService:
             timetable_id: uuid.UUID,
             session: AsyncSession
     ):
-        # TODO: Сделать проверку на уже забронированные талоны
         timetable = await TimetableDAO.find_one_or_none(session, TimetableModel.id == timetable_id)
         if not timetable:
             raise HTTPException(status_code=404, detail='Timetable not found.')
-
+        current_datetime = datetime.now(tz=timezone.utc)
         talons = []
         start_time = timetable.from_column
         end_time = timetable.to
+        if end_time < current_datetime:
+            raise HTTPException(status_code=400, detail='Timetable is already passed.')
 
         lock_appointments = {appoint.time for appoint in timetable.appointments}
 
         while start_time < end_time:
-            if start_time in lock_appointments:
+            if start_time in lock_appointments or start_time < current_datetime:
                 start_time += timedelta(minutes=30)
                 continue
             talons.append(start_time)

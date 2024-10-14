@@ -102,7 +102,7 @@ async def get_hospital_room_timetable(
     )
 
 
-@router.get('{id}/Appointment', response_model=list[datetime])
+@router.get('/{id}/Appointment', response_model=list[datetime])
 async def get_appointment_talons(
         id: uuid.UUID,
         session: AsyncSession = Depends(db.get_async_session),
@@ -111,11 +111,11 @@ async def get_appointment_talons(
     return await TimetableService.get_talons(id, session)
 
 
-@router.post('{id}/Appointment')
+@router.post('/{id}/Appointment')
 async def booking_appointment(
         id: uuid.UUID,
         appointment: CreateAppointments,
         session: AsyncSession = Depends(db.get_async_session),
         user: dict = Depends(get_current_user)
 ):
-    return await AppointmentsService.booking_appointment(id, appointment, session)
+    return await AppointmentsService.booking_appointment(user, id, appointment, session)

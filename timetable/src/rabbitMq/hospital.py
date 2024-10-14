@@ -4,10 +4,11 @@ import uuid
 import aio_pika
 from fastapi import HTTPException
 from . import RabbitMQBaseClient
+from ..config import settings
 
 
 class RabbitMQClient(RabbitMQBaseClient):
-    def __init__(self, rabbitmq_url='amqp://guest:guest@localhost/'):
+    def __init__(self, rabbitmq_url=f'amqp://{settings.RABBITMQ_USER}:{settings.RABBITMQ_PASSWORD}@{settings.RABBITMQ_HOST}/'):
         super().__init__(rabbitmq_url)
 
     async def call_room(self, hospital_id: uuid.UUID, room: str):

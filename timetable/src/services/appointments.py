@@ -1,3 +1,4 @@
+import datetime
 import uuid
 
 from fastapi import HTTPException
@@ -11,7 +12,13 @@ from src.schemas.appointments import CreateAppointments, CreateAppointmentsDB
 
 class AppointmentsService:
     @classmethod
-    async def booking_appointment(cls, timetable_id: uuid.UUID, appointment: CreateAppointments, session: AsyncSession):
+    async def booking_appointment(
+            cls,
+            user,
+            timetable_id: uuid.UUID,
+            appointment: CreateAppointments,
+            session: AsyncSession
+    ):
         timetable = await TimetableDAO.find_one_or_none(session, TimetableModel.id == timetable_id)
         if not timetable:
             raise HTTPException(status_code=404, detail='Timetable not found')
@@ -25,8 +32,20 @@ class AppointmentsService:
             session,
             CreateAppointmentsDB(
                 timetable_id=timetable.id,
+                user_id=user.get('sub'),
                 time=appointment.time
             )
         )
 
+    @classmethod
+    async def delete_appointment(cls, user, appointment_id: uuid.UUID, session: AsyncSession):
+        appointment = await AppointmentDAO.find_one_or_none(session, id=appointment_id)
+        if not appointment:
+            raise HTTPException(status_code=404, detail='Appointment not found')
+        if appointment.user_id != user.get('sub') and not any(role in ['Admin', 'Manager'] for role in user.get('roles')):
+            raise HTTPException(status_code=403, detail='You are not authorized to delete this appointment')
+        if appointment.time <= datetime.datetime.now(datetime.timezone.utc):
+            raise HTTPException(status_code=400, detail='Cannot delete a meeting that has started')
+
+        await AppointmentDAO.delete(session, id=appointment_id)
 

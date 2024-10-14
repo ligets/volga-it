@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, timezone
 
 from fastapi import HTTPException
 from pydantic import BaseModel, Field, field_validator
@@ -17,6 +17,9 @@ class TimetableCreate(BaseModel):
     def check_date_format(cls, v):
         if v.minute % 30 != 0 or v.second != 0:
             raise ValueError('Минуты должны быть кратны 30 минутам, а секунды всегда равны 0')
+        current_time = datetime.now(timezone.utc)
+        if v <= current_time:
+            raise ValueError("Время должно быть больше текущего")
         return v
 
     @field_validator('to')

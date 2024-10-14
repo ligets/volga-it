@@ -25,6 +25,7 @@ def upgrade() -> None:
                     sa.Column('name', sa.String(), nullable=False),
                     sa.Column('address', sa.String(), nullable=False),
                     sa.Column('contactPhone', sa.String(), nullable=False, unique=True),
+                    sa.Column('is_deleted', sa.Boolean(), nullable=False),
                     sa.PrimaryKeyConstraint('id')
                     )
     op.create_table('rooms',

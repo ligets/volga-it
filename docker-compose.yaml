@@ -64,18 +64,35 @@ services:
     networks:
       - work
 
-  # hospitals_microservice:
-  #   build:
-  #     context: ./hospitals
-  #   container_name: hospitals_microservice
-  #   ports:
-  #     - "8082:8082"
-  #   depends_on:
-  #     - postgres
-  #   env_file:
-  #     - ./hospitals/.env
-  #   networks:
-  #     - work
+  hospitals_microservice:
+    build:
+      context: ./hospitals
+    container_name: hospitals_microservice
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+    env_file:
+      - ./hospitals/.env
+    networks:
+      - work
+
+  timetable_microservice:
+    build:
+      context: ./timetable
+    container_name: timetable_microservice
+    ports:
+      - "8083:8083"
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+    env_file:
+      - ./timetable/.env
+    networks:
+      - work
 
 networks:
   work:
