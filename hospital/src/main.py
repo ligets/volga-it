@@ -1,20 +1,19 @@
-import asyncio
 import os
 import sys
 from contextlib import asynccontextmanager
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis import asyncio as aioredis
-
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-
-from src.rabbitMq.server import consume_rabbitmq
-from src.config import settings
-from fastapi import FastAPI, Depends
+import asyncio
+from fastapi import FastAPI
 import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.config import settings
+from src.rabbitMq.server import consume_rabbitmq
 from src import all_routers
-from src.dependencies import validate_user_role
 
 
 @asynccontextmanager
@@ -24,7 +23,7 @@ async def lifespan(_: FastAPI):
         encoding='utf-8',
         decode_responses=True
     )
-    FastAPICache.init(RedisBackend(redis), prefix='timetable')
+    FastAPICache.init(RedisBackend(redis), prefix='account')
     task = asyncio.create_task(consume_rabbitmq())
     try:
         yield
@@ -32,17 +31,26 @@ async def lifespan(_: FastAPI):
         task.cancel()
         await redis.close()
 
+
 app = FastAPI(
-    title="Timetable microservice",
+    title="Hospitals microservice",
     docs_url='/ui-swagger',
     lifespan=lifespan
 )
+
 
 app.include_router(
     all_routers,
     prefix='/api'
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins='*',
+    allow_credentials=True,
+    allow_methods='*',
+    allow_headers='*',
+)
 
 if __name__ == '__main__':
-    uvicorn.run('main:app', host='0.0.0.0', port=8083, reload=True)
+    uvicorn.run('main:app', host='0.0.0.0', port=8082, log_level='info', reload=True)

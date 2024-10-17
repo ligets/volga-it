@@ -49,10 +49,10 @@ services:
     networks:
       - work
 
-  accounts_microservice:
+  account_service:
     build:
-      context: ./auth
-    container_name: accounts_microservice
+      context: ./account/
+    container_name: account_service
     ports:
       - "8081:8081"
     depends_on:
@@ -60,14 +60,14 @@ services:
       - postgres
       - redis
     env_file:
-      - ./auth/.env
+      - ./account/.env
     networks:
       - work
 
-  hospitals_microservice:
+  hospitals_service:
     build:
-      context: ./hospitals
-    container_name: hospitals_microservice
+      context: ./hospital/
+    container_name: hospital_service
     ports:
       - "8082:8082"
     depends_on:
@@ -75,14 +75,14 @@ services:
       - redis
       - rabbitmq
     env_file:
-      - ./hospitals/.env
+      - ./hospital/.env
     networks:
       - work
 
-  timetable_microservice:
+  timetable_service:
     build:
-      context: ./timetable
-    container_name: timetable_microservice
+      context: ./timetable/
+    container_name: timetable_service
     ports:
       - "8083:8083"
     depends_on:

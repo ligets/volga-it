@@ -4,7 +4,7 @@ import aio_pika
 
 from src.config import settings
 from src.database import db
-from src.services.timetable import TimetableService
+from src.timetable.service import TimetableService
 
 
 async def delete_doctor(message: aio_pika.abc.AbstractIncomingMessage):

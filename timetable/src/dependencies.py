@@ -1,27 +1,23 @@
-import json
 import uuid
 
-import httpx
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 import jwt
+
 from src.rabbitMq.doctor import RabbitMQClient as doctorRPC
 from src.rabbitMq.hospital import RabbitMQClient as hospitalRoomRPC
+from src.rabbitMq.token import RabbitMQClient as tokenRPC
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="http://localhost:8081/api/Authentication/SignIn")
 
 
 async def validate_token(token: str = Depends(oauth2_scheme)):
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.get(
-                'http://localhost:8081/api/Authentication/Validate',
-                headers={"Authorization": f"Bearer {token}"},
-            )
-            response.raise_for_status()
-            return token
-        except httpx.HTTPStatusError as exc:
-            raise HTTPException(status_code=exc.response.status_code, detail=str(json.loads(exc.response.text).get('detail')))
+    rabbitmq = tokenRPC()
+    response: bool | str = await rabbitmq.call(token)
+    if response is True:
+        return token
+    else:
+        raise HTTPException(status_code=401, detail=response)
 
 
 async def get_current_user(token: str = Depends(validate_token)):

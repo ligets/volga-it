@@ -18,9 +18,12 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from src.appointment.model import AppointmentModel
+from src.accounts.models import UserModel
+# from src.models.RefreshSessionModel import RefreshSessionModel
+# from src.models.RoleModel import RoleModel
+# from src.models.UserMtmRole import user_mtm_role_table
 
-target_metadata = [AppointmentModel.metadata]
+target_metadata = [UserModel.metadata]
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
