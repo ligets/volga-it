@@ -1,7 +1,6 @@
 import uuid
-from datetime import datetime, timedelta, date, timezone
+from datetime import datetime, timedelta, timezone
 
-from fastapi import HTTPException
 from pydantic import BaseModel, Field, field_validator
 
 

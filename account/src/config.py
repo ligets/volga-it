@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 
+from loguru import logger
 from pydantic_settings import BaseSettings
 
 load_dotenv()
@@ -41,7 +42,7 @@ class Settings(BaseSettings):
     RABBITMQ_USER: str = RABBITMQ_USER
     RABBITMQ_PASSWORD: str = RABBITMQ_PASSWORD
 
-    REDIS_HOST: str = REDIS_HOST
+    # REDIS_HOST: str = REDIS_HOST
 
     @property
     def POSTGRES_URL(self) -> str:
@@ -52,3 +53,12 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+logger.remove()
+logger.add(
+    lambda msg: print(msg, end=""),
+    format="<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | "
+           "<cyan>{module}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
+    level="INFO",
+    colorize=True
+)

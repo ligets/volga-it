@@ -54,7 +54,7 @@ async def validate_room_hospital(hospital_id: uuid.UUID, room: str):
     hospital_client = hospitalRoomRPC()
     exist_room = await hospital_client.call_room(hospital_id, room)
 
-    if exist_room != True:
+    if exist_room is not True:
         raise HTTPException(status_code=404, detail=exist_room)
     return True
 

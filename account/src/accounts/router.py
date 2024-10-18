@@ -1,7 +1,7 @@
 import uuid
 
 from fastapi import APIRouter, Depends, Query
-from fastapi_cache.decorator import cache
+# from fastapi_cache.decorator import cache
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import db
@@ -30,7 +30,7 @@ async def update_user_info(
 
 
 @router.get("", response_model=list[UserDb])
-@cache(expire=30)
+# @cache(expire=30)
 async def get_list_users_info(
         offset: int = Query(..., alias="from"),
         count: int = Query(...),

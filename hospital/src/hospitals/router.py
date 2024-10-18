@@ -3,6 +3,8 @@ import uuid
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
+# from fastapi_cache.decorator import cache
+
 from src.database import db
 from src.dependencies import validate_token
 from src.dependencies import get_current_admin
@@ -14,6 +16,7 @@ router = APIRouter()
 
 
 @router.get('', response_model=list[HospitalResponse])
+# @cache(expire=30)
 async def get_list_hospitals(
         offset: int = Query(..., alias='from'),
         limit: int = Query(..., alias='count'),
@@ -24,6 +27,7 @@ async def get_list_hospitals(
 
 
 @router.get('/{id}', response_model=HospitalResponse)
+# @cache(expire=30)
 async def get_hospital_info(
         id: uuid.UUID,
         session: AsyncSession = Depends(db.get_async_session),
@@ -33,6 +37,7 @@ async def get_hospital_info(
 
 
 @router.get('/{id}/Rooms', response_model=list[RoomResponse])
+# @cache(expire=30)
 async def get_hospital_rooms(
         id: uuid.UUID,
         session: AsyncSession = Depends(db.get_async_session),

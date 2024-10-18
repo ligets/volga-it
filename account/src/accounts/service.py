@@ -1,13 +1,12 @@
 import uuid
 
 from fastapi import HTTPException, status
-from sqlalchemy import func, and_
+from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.accounts.dao import UserDAO
 from src.dependencies import delete_timetable_doctor
 from src.accounts.models import UserModel
-from src.accounts.models import RoleModel
 from src.accounts.schemas import UserUpdate, UserUpdateDB, UserUpdateAdmin, \
     UserCreate, UserCreateAdmin, UserCreateDB
 from src.authentication.utils import get_password_hash

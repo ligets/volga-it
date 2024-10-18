@@ -10,7 +10,7 @@ from src.appointment.schemas import CreateAppointments
 from src.timetable.schemas import TimetableCreate, TimetableResponse
 from src.appointment.service import AppointmentsService
 from src.timetable.service import TimetableService
-from fastapi_cache.decorator import cache
+# from fastapi_cache.decorator import cache
 
 router = APIRouter()
 
@@ -63,7 +63,7 @@ async def delete_hospital_timetable(
 
 
 @router.get('/Hospital/{id}', response_model=list[TimetableResponse])
-@cache(expire=30)
+# @cache(expire=30)
 async def get_hospital_timetable(
         id: uuid.UUID,
         from_datetime: datetime = Query(..., alias="from"),
@@ -75,7 +75,7 @@ async def get_hospital_timetable(
 
 
 @router.get('/Doctor/{id}', response_model=list[TimetableResponse])
-@cache(expire=30)
+# @cache(expire=30)
 async def get_doctor_timetable(
         id: uuid.UUID,
         from_datetime: datetime = Query(..., alias="from"),
@@ -87,7 +87,7 @@ async def get_doctor_timetable(
 
 
 @router.get('/Hospital/{id}/Room/{room}', response_model=list[TimetableResponse])
-@cache(expire=30)
+# @cache(expire=30)
 async def get_hospital_room_timetable(
         id: uuid.UUID,
         room: str,
@@ -102,6 +102,7 @@ async def get_hospital_room_timetable(
 
 
 @router.get('/{id}/Appointment', response_model=list[datetime])
+# @cache(expire=10)
 async def get_appointment_talons(
         id: uuid.UUID,
         session: AsyncSession = Depends(db.get_async_session),

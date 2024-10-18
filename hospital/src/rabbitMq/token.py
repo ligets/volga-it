@@ -1,5 +1,4 @@
 import uuid
-import time
 
 from src.config import settings
 from . import RabbitMQBaseClientRPC
@@ -10,7 +9,6 @@ class RabbitMQClientRPC(RabbitMQBaseClientRPC):
         super().__init__(rabbitmq_url)
 
     async def call(self, token: str):
-        start = time.time()
         await self.connect()
         async with self.connection:
             channel, callback_queue = await self.create_channel_and_queue()
@@ -27,7 +25,5 @@ class RabbitMQClientRPC(RabbitMQBaseClientRPC):
             )
             response = await self._wait_for_response(callback_queue, correlation_id)
         await self.close()
-        end_time = time.time()
-        print(f"{(end_time - start)}")
         return True if response == b'\01' else response.decode()
 

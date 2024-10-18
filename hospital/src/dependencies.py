@@ -1,11 +1,9 @@
-import json
 import uuid
 
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 import jwt
 
-from src.config import settings
 from src.rabbitMq.timetable import RabbitMQClient
 from src.rabbitMq.token import RabbitMQClientRPC
 

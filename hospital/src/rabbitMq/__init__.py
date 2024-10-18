@@ -1,7 +1,4 @@
 import asyncio
-import json
-import uuid
-from functools import partial
 
 import aio_pika
 from fastapi import HTTPException

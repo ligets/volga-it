@@ -1,8 +1,8 @@
 import uuid
-
+import asyncio
 import aio_pika
 
-from src.config import settings
+from src.config import settings, logger
 from src.database import db
 from src.timetable.service import TimetableService
 
@@ -24,17 +24,25 @@ async def delete_hospital(message: aio_pika.abc.AbstractIncomingMessage):
 
 
 async def consume_rabbitmq():
-    connection = await aio_pika.connect_robust(
-        f'amqp://{settings.RABBITMQ_USER}:{settings.RABBITMQ_PASSWORD}@{settings.RABBITMQ_HOST}/'
-    )
-    channel = await connection.channel()
+    while True:
+        try:
+            connection = await aio_pika.connect_robust(
+                f'amqp://{settings.RABBITMQ_USER}:{settings.RABBITMQ_PASSWORD}@{settings.RABBITMQ_HOST}/'
+            )
+            channel = await connection.channel()
 
-    hospital_room_queue = await channel.declare_queue(
-        'delete_timetable_doctor', auto_delete=True
-    )
-    await hospital_room_queue.consume(delete_doctor)
+            hospital_room_queue = await channel.declare_queue(
+                'delete_timetable_doctor', auto_delete=True
+            )
+            await hospital_room_queue.consume(delete_doctor)
 
-    hospital_queue = await channel.declare_queue(
-        'delete_timetable_hospital', auto_delete=True
-    )
-    await hospital_queue.consume(delete_hospital)
+            hospital_queue = await channel.declare_queue(
+                'delete_timetable_hospital', auto_delete=True
+            )
+            await hospital_queue.consume(delete_hospital)
+
+            logger.info('Успешное подключение к RabbitMQ')
+            break
+        except Exception as e:
+            logger.error(f'Ошибка подключения к RabbitMQ: {e}. Переподключение через 5 секунд...')
+            await asyncio.sleep(5)

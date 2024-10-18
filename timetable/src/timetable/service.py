@@ -40,7 +40,6 @@ class TimetableService:
 
     @classmethod
     async def delete_hospital_timetable(cls, hospital_id: uuid.UUID, session: AsyncSession):
-        # TODO: при удалении больницы или изменении ее адреса удалять ее расписание
         await TimetableDAO.delete(session, TimetableModel.hospitalId == hospital_id)
 
     @classmethod

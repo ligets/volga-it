@@ -6,31 +6,32 @@ from fastapi import FastAPI
 import uvicorn
 from contextlib import asynccontextmanager
 
-from fastapi_cache import FastAPICache
-from fastapi_cache.backends.redis import RedisBackend
-from redis import asyncio as aioredis
+""" Add cached - poetry install fastapi-cache2[redis] """
+# from fastapi_cache import FastAPICache
+# from fastapi_cache.backends.redis import RedisBackend
+# from redis import asyncio as aioredis
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.config import settings
+# from src.config import settings
 from src.rabbitMq.server import consume_rabbitmq
 from src import all_router
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    redis = aioredis.from_url(
-        f"redis://{settings.REDIS_HOST}",
-        encoding='utf-8',
-        decode_responses=True
-    )
-    FastAPICache.init(RedisBackend(redis), prefix='account')
+    # redis = aioredis.from_url(
+    #     f"redis://{settings.REDIS_HOST}",
+    #     encoding='utf-8',
+    #     decode_responses=True
+    # )
+    # FastAPICache.init(RedisBackend(redis), prefix='account')
     task = asyncio.create_task(consume_rabbitmq())
     try:
         yield
     finally:
         task.cancel()
-        await redis.close()
+        # await redis.close()
 
 
 app = FastAPI(
