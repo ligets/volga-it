@@ -15,7 +15,7 @@
 1. __Запуск решения:__
     * Скопировать репозиторий с помощью команды ```git clone https://github.com/ligets/volga.git``` или скачать в zip архиве и распокавать
     * Если вы используете docker-compose версии где требуется указывать тэг version, то раскомментируйте 1-ую строку в файле docker-compose.yaml
-    * Запустить решение с помощью команды <code>docker-compose up --build -d</code>
+    * Запустить решение с помощью команды <code>docker-compose up -d</code>
 
     ---
 
