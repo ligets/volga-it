@@ -1,11 +1,18 @@
 import uuid
 from typing import Optional
+
+from fastapi import Form
 from pydantic import BaseModel, Field
 
 
-class UserAuth(BaseModel):
+class CredentialsJSON(BaseModel):
     username: str
     password: str
+
+
+class CredentialsFormData(BaseModel):
+    username: str = Form(...)
+    password: str = Form(...)
 
 
 class Token(BaseModel):
@@ -23,5 +30,9 @@ class RefreshSessionCreate(BaseModel):
 
 class RefreshSessionUpdate(RefreshSessionCreate):
     user_id: Optional[uuid.UUID] = Field(None)
+
+
+class Refresh(BaseModel):
+    refreshToken: uuid.UUID
 
 

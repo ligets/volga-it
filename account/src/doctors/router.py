@@ -7,13 +7,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import db
 from src.dependencies import get_current_user
-from src.accounts.schemas import UserDb
+from src.accounts.schemas import ResponseDoctor
 from .service import DoctorService
 
 router = APIRouter()
 
 
-@router.get("", response_model=list[UserDb])
+@router.get("", response_model=list[ResponseDoctor])
 # @cache(expire=30)
 async def get_doctors_list(
         nameFilter: Optional[str] = None,
@@ -30,7 +30,7 @@ async def get_doctors_list(
     )
 
 
-@router.get("/{id}", response_model=UserDb)
+@router.get("/{id}", response_model=ResponseDoctor)
 # @cache(expire=30)
 async def get_doctor_info(
         id: uuid.UUID,

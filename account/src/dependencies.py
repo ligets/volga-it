@@ -3,7 +3,7 @@ from typing import Optional
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import jwt, ExpiredSignatureError
+import jwt
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.config import settings
@@ -21,14 +21,14 @@ async def validate_token(token: str = Depends(oauth2)):
         decode = jwt.decode(
             token,
             settings.auth_jwt.public_key_path.read_text(),
-            algorithms=settings.auth_jwt.algorithm
+            algorithms=[settings.auth_jwt.algorithm]
         )
-        if decode.get('is_deleted') == True:
+        if decode.get('is_deleted') is True:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has been revoked.")
         return token
-    except ExpiredSignatureError:
+    except jwt.ExpiredSignatureError:
         raise TokenExpiredException
-    except Exception:
+    except jwt.PyJWTError:
         raise InvalidToken
 
 
@@ -38,17 +38,17 @@ async def get_current_user(token: str = Depends(oauth2), session: AsyncSession =
         payload = jwt.decode(
             token,
             settings.auth_jwt.public_key_path.read_text(),
-            algorithms=settings.auth_jwt.algorithm
+            algorithms=[settings.auth_jwt.algorithm]
         )
         user_id = payload.get("sub")
-        if user_id is None or payload.get('is_deleted') == True:
+        if user_id is None or payload.get('is_deleted') is True:
             raise InvalidToken
 
         current_user: UserModel = await UserService.get_user(uuid.UUID(user_id), session)
         return current_user
-    except ExpiredSignatureError:
+    except jwt.ExpiredSignatureError:
         raise TokenExpiredException
-    except Exception:
+    except jwt.PyJWTError:
         raise InvalidToken
 
 

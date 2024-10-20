@@ -22,7 +22,7 @@ class UserService:
         return await UserDAO.add(
             session,
             UserCreateDB(
-                **data.dict(exclude={"password"}),
+                **data.model_dump(exclude={"password"}),
                 hashed_password=get_password_hash(data.password)
             )
         )
@@ -38,13 +38,15 @@ class UserService:
     async def update_user(cls, user_id: uuid.UUID, user: UserUpdate | UserUpdateAdmin, session: AsyncSession):
         if isinstance(user, UserUpdateAdmin):
             current_user = await cls.get_user(user_id, session)
+            if user.username == current_user.username:
+                del user.username
             if 'Doctor' in [role.name for role in current_user.roles] and 'Doctor' not in user.roles:
                 await delete_timetable_doctor(current_user.id)
         user_update = await UserDAO.update(
             session,
             and_(UserModel.id == user_id, UserModel.is_deleted == False),
             obj_in=UserUpdateDB(
-                **user.dict(exclude={"password"}),
+                **user.model_dump(exclude={"password", "username"}),
                 hashed_password=get_password_hash(user.password)
             )
         )

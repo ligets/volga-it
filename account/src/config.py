@@ -14,6 +14,13 @@ POSTGRES_PORT: str = os.getenv('POSTGRES_PORT')
 POSTGRES_USER: str = os.getenv('POSTGRES_USER')
 POSTGRES_PASSWORD: str = os.getenv('POSTGRES_PASSWORD')
 POSTGRES_DB: str = os.getenv('POSTGRES_DB')
+
+POSTGRES_TEST_HOST: str = os.getenv('POSTGRES_TEST_HOST')
+POSTGRES_TEST_PORT: str = os.getenv('POSTGRES_TEST_PORT')
+POSTGRES_TEST_USER: str = os.getenv('POSTGRES_TEST_USER')
+POSTGRES_TEST_PASSWORD: str = os.getenv('POSTGRES_TEST_PASSWORD')
+POSTGRES_TEST_DB: str = os.getenv('POSTGRES_TEST_DB')
+
 RABBITMQ_HOST: str = os.getenv('RABBITMQ_HOST')
 RABBITMQ_USER: str = os.getenv('RABBITMQ_USER')
 RABBITMQ_PASSWORD: str = os.getenv('RABBITMQ_PASSWORD')
@@ -38,6 +45,12 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str = POSTGRES_PASSWORD
     POSTGRES_DB: str = POSTGRES_DB
 
+    POSTGRES_TEST_HOST: str = POSTGRES_TEST_HOST
+    POSTGRES_TEST_PORT: str = POSTGRES_TEST_PORT
+    POSTGRES_TEST_USER: str = POSTGRES_TEST_USER
+    POSTGRES_TEST_PASSWORD: str = POSTGRES_TEST_PASSWORD
+    POSTGRES_TEST_DB: str = POSTGRES_TEST_DB
+
     RABBITMQ_HOST: str = RABBITMQ_HOST
     RABBITMQ_USER: str = RABBITMQ_USER
     RABBITMQ_PASSWORD: str = RABBITMQ_PASSWORD
@@ -46,7 +59,11 @@ class Settings(BaseSettings):
 
     @property
     def POSTGRES_URL(self) -> str:
-        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}?async_fallback=True"
+        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+
+    @property
+    def POSTGRES_TEST_URL(self) -> str:
+        return f"postgresql+asyncpg://{self.POSTGRES_TEST_USER}:{self.POSTGRES_TEST_PASSWORD}@{self.POSTGRES_TEST_HOST}:{self.POSTGRES_TEST_PORT}/{self.POSTGRES_TEST_DB}"
 
     db_echo: bool = False
     auth_jwt: JWTSettings = JWTSettings()

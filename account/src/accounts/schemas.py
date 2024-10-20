@@ -1,6 +1,6 @@
 import uuid
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class RoleSchema(BaseModel):
@@ -21,8 +21,7 @@ class UserDb(BaseModel):
     username: str
     roles: list[RoleSchema]
 
-    class Config:
-        from_attributes = True
+    model_config = {'from_attributes': True}
 
 
 class UserCreate(UserBase):
@@ -62,5 +61,10 @@ class UserUpdateDB(BaseModel):
     hashed_password: str
     roles: Optional[List[str]] = None
 
+
+class ResponseDoctor(BaseModel):
+    id: uuid.UUID
+    firstName: str
+    lastName: str
 
 

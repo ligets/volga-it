@@ -21,5 +21,5 @@ class ConflictUniqueAttribute(HTTPException):
     def __init__(self, detail):
         super().__init__(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"Conflict Exc: {detail}"
+            detail=detail
         )

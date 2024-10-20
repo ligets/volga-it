@@ -1,7 +1,7 @@
 import uuid
 from datetime import timedelta, datetime, timezone
 
-from jose import jwt
+import jwt
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.config import settings
@@ -94,7 +94,7 @@ class AuthService:
             'lastName': user.lastName,
             'roles': [role.name for role in user.roles],
             'is_deleted': user.is_deleted,
-            'exp': datetime.utcnow() + timedelta(minutes=settings.auth_jwt.access_token_expire_minutes)
+            'exp': datetime.now(timezone.utc) + timedelta(minutes=settings.auth_jwt.access_token_expire_minutes)
         }
 
         encoded_jwt = jwt.encode(
