@@ -1,6 +1,6 @@
 import uuid
 from typing import List, Optional
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
 
 class RoleSchema(BaseModel):

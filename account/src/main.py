@@ -13,7 +13,7 @@ from contextlib import asynccontextmanager
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# from src.config import settings
+from src.config import settings
 from src.rabbitMq.server import consume_rabbitmq
 from src import all_router
 

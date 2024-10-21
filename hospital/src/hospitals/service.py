@@ -15,7 +15,7 @@ class HospitalService:
     async def create_hospital(cls, data: HospitalCreate, session: AsyncSession):
         return await HospitalsDAO.add(
             session,
-            HospitalCreateDB(**data.dict())
+            HospitalCreateDB(**data.model_dump())
         )
 
     @classmethod
@@ -68,7 +68,7 @@ class HospitalService:
                 HospitalModel.is_deleted == False
             ),
             obj_in=HospitalUpdateDB(
-                **data.dict()
+                **data.model_dump()
             )
         )
         if not hospital:

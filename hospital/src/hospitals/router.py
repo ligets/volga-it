@@ -18,8 +18,8 @@ router = APIRouter()
 @router.get('', response_model=list[HospitalResponse])
 # @cache(expire=30)
 async def get_list_hospitals(
-        offset: int = Query(..., alias='from'),
-        limit: int = Query(..., alias='count'),
+        offset: int = Query(..., alias='from', ge=0),
+        limit: int = Query(..., alias='count', ge=1),
         session: AsyncSession = Depends(db.get_async_session),
         valid_token: dict = Depends(validate_token)
 ):

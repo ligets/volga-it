@@ -1,7 +1,7 @@
 from httpx import AsyncClient
 from sqlalchemy import text
 
-from tests.conftest import async_session_maker
+from tests.pytest.conftest import async_session_maker
 
 
 async def test_me(ac: AsyncClient):

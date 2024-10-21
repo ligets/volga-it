@@ -1,14 +1,13 @@
 from typing import List, Optional
 import uuid
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class RoomResponse(BaseModel):
     id: uuid.UUID
     name: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class HospitalBase(BaseModel):
@@ -39,8 +38,7 @@ class HospitalResponse(BaseModel):
     address: str
     contactPhone: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class HospitalCreateResponse(HospitalResponse):
