@@ -25,5 +25,4 @@ class RabbitMQClient(RabbitMQBaseClient):
             )
             response = await self._wait_for_response(callback_queue, correlation_id)
         await self.close()
-        print(response)
         return response == b'\01'

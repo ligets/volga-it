@@ -1,7 +1,9 @@
+import asyncio
+
 from elasticsearch import AsyncElasticsearch
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from src.config import settings
+from src.config import settings, logger
 
 
 class DatabaseHelper:
@@ -28,4 +30,10 @@ db = DatabaseHelper(
     echo=settings.db_echo
 )
 
-es = AsyncElasticsearch([f"http://{settings.ELASTIC_HOST}:9200"])
+
+es = AsyncElasticsearch(
+        hosts=[f"http://{settings.ELASTIC_HOST}:{settings.ELASTIC_PORT}"]
+)
+
+
+

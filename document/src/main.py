@@ -1,18 +1,31 @@
 import os
 import sys
+import time
 from contextlib import asynccontextmanager
 
 import uvicorn
 from fastapi import FastAPI
+from elasticsearch import ElasticsearchWarning
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src import all_routers
 from src.database import es
+from src.config import logger
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    while True:
+        try:
+            if await es.ping():
+                logger.info("Успешное подключение к ElasticSearch")
+                break
+            logger.error("Не удалось подключиться к ElasticSearch. Переподключение через 5 секунд...")
+        except ElasticsearchWarning as e:
+            logger.error(f"Ошибка ElasticSearch: {e}")
+        time.sleep(5)
+
     try:
         if not await es.indices.exists(index='history'):
             await es.indices.create(index='history', body={

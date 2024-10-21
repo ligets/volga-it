@@ -32,7 +32,7 @@ class HistoryService:
 
     @classmethod
     async def get_history_user(cls, pacient_id: uuid.UUID, current_user: dict):
-        if pacient_id != current_user.get('sub') and 'Doctor' not in current_user.get('roles'):
+        if str(pacient_id) != current_user.get('sub') and 'Doctor' not in current_user.get('roles'):
             raise HTTPException(status_code=403, detail='You are not authorized to view this history.')
 
         res = await es.search(index="history", body={
@@ -54,5 +54,5 @@ class HistoryService:
         if not res:
             raise HTTPException(status_code=404, detail='History not found.')
         history_dict = {key: value for key, value in res.__dict__.items() if not key.startswith('_sa')}
-        await es.update(index="history", id=res.id, body=history_dict)
+        await es.index(index="history", id=res.id, body=history_dict)
         return res
