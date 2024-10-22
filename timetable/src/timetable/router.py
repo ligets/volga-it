@@ -94,14 +94,14 @@ async def get_hospital_room_timetable(
         from_datetime: datetime = Query(..., alias="from"),
         to: datetime = Query(...),
         session: AsyncSession = Depends(db.get_async_session),
-        user: dict = Depends(validate_user_role(['Admin', 'Manager']))
+        user: dict = Depends(validate_user_role(['Admin', 'Manager', 'Doctor']))
 ):
     return await TimetableService.get_hospital_room_timetable(
         id, room, from_datetime, to, session
     )
 
 
-@router.get('/{id}/Appointment', response_model=list[datetime])
+@router.get('/{id}/Appointments', response_model=list[datetime])
 # @cache(expire=10)
 async def get_appointment_talons(
         id: uuid.UUID,
@@ -111,7 +111,7 @@ async def get_appointment_talons(
     return await TimetableService.get_talons(id, session)
 
 
-@router.post('/{id}/Appointment')
+@router.post('/{id}/Appointments')
 async def booking_appointment(
         id: uuid.UUID,
         appointment: CreateAppointments,

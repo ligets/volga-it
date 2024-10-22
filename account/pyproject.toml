@@ -20,7 +20,6 @@ bcrypt = "4.0.1"
 datetime = "^5.5"
 python-multipart = "^0.0.12"
 aio-pika = "^9.4.3"
-loguru = "^0.7.2"
 pyjwt = "^2.9.0"
 cryptography = "^43.0.3"
 

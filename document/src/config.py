@@ -1,4 +1,4 @@
-from loguru import logger
+import logging
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from dotenv import load_dotenv
 
@@ -40,11 +40,5 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-logger.remove()
-logger.add(
-    lambda msg: print(msg, end=""),
-    format="<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | "
-           "<cyan>{module}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
-    level="INFO",
-    colorize=True
-)
+logger = logging.getLogger("uvicorn.error")
+

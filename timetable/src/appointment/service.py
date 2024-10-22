@@ -42,7 +42,7 @@ class AppointmentsService:
         appointment = await AppointmentDAO.find_one_or_none(session, id=appointment_id)
         if not appointment:
             raise HTTPException(status_code=404, detail='Appointment not found')
-        if appointment.user_id != user.get('sub') and not any(role in ['Admin', 'Manager'] for role in user.get('roles')):
+        if str(appointment.user_id) != user.get('sub') and not any(role in ['Admin', 'Manager'] for role in user.get('roles')):
             raise HTTPException(status_code=403, detail='You are not authorized to delete this appointment')
         if appointment.time <= datetime.datetime.now(datetime.timezone.utc):
             raise HTTPException(status_code=400, detail='Cannot delete a meeting that has started')
