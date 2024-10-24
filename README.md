@@ -8,8 +8,8 @@
 4. Document URL: [http://localhost:8084/ui-swagger](http://localhost:8084/ui-swagger)
 
 ## __Дополнительное задание:__
-1. ElastickSearch URL: http://localhost:9200/
-2. Kibana URL: http://localhost:5601/
+1. ElastickSearch URL: [http://localhost:9200/](http://localhost:9200/)
+2. Kibana URL: [http://localhost:5601/](http://localhost:5601/)
 
 ## __Дополнительная информация__
 1. __Запуск решения:__
@@ -35,7 +35,7 @@
     ---
 
 3. __Используемый стек разработки:__
-    * Postgres - Основная СУБД
+    * PostgreSQL - Основная СУБД
     * RabbitMQ - Брокер сообщений
     * ElasticSearch - Поиск документов
     * Kibana - Веб-интерфейс для ElasticSearch
