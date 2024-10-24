@@ -50,6 +50,13 @@ class TimetableService:
             to: datetime,
             session: AsyncSession
     ):
+        if from_datetime >= to:
+            raise HTTPException(status_code=422, detail=[
+                {
+                    'loc': ['query', 'to'],
+                    'msg': "Поле 'to' должно быть больше, чем 'from'"
+                }
+            ])
         await validate_hospital(hospital_id)
         if to.time() == datetime.min.time():
             to += timedelta(days=1)
@@ -58,7 +65,7 @@ class TimetableService:
             and_(
                 TimetableModel.hospitalId == hospital_id,
                 TimetableModel.to > from_datetime,
-                TimetableModel.from_column <= to
+                TimetableModel.from_column < to
             )
         )
 
@@ -98,6 +105,13 @@ class TimetableService:
             to: datetime,
             session: AsyncSession
     ):
+        if from_datetime >= to:
+            raise HTTPException(status_code=422, detail=[
+                {
+                    'loc': ['query', 'to'],
+                    'msg': "Поле 'to' должно быть больше, чем 'from'"
+                }
+            ])
         await validate_room_hospital(hospital_id, room)
         if to.time() == datetime.min.time():
             to += timedelta(days=1)
@@ -107,7 +121,7 @@ class TimetableService:
                 TimetableModel.hospitalId == hospital_id,
                 TimetableModel.room == room,
                 TimetableModel.to > from_datetime,
-                TimetableModel.from_column <= to
+                TimetableModel.from_column < to
             )
         )
 
