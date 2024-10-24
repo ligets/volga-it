@@ -71,7 +71,12 @@ class TimetableService:
             session: AsyncSession
     ):
         if from_datetime >= to:
-            raise HTTPException(status_code=422, detail=[{'loc': []}])
+            raise HTTPException(status_code=422, detail=[
+                {
+                    'loc': ['query', 'to'],
+                    'msg': "Поле 'to' должно быть больше, чем 'from'"
+                }
+            ])
         await validate_doctor(doctor_id)
         if to.time() == datetime.min.time():
             to += timedelta(days=1)
