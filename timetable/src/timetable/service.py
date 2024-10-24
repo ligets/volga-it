@@ -70,6 +70,8 @@ class TimetableService:
             to: datetime,
             session: AsyncSession
     ):
+        if from_datetime >= to:
+            raise Exception("Поле 'to' должно быть больше, чем 'from', и они не должны быть равны.")
         await validate_doctor(doctor_id)
         if to.time() == datetime.min.time():
             to += timedelta(days=1)
@@ -78,7 +80,7 @@ class TimetableService:
             and_(
                 TimetableModel.doctorId == doctor_id,
                 TimetableModel.to > from_datetime,
-                TimetableModel.from_column <= to
+                TimetableModel.from_column < to
             )
         )
 
