@@ -72,8 +72,6 @@ class HospitalsDAO(BaseDAO[HospitalModel, HospitalCreateDB, HospitalUpdateDB]):
             if rooms and hospital:
                 await cls.update_rooms(session, rooms, hospital)
             return hospital
-        except IntegrityError:
-            raise ConflictUniqueAttribute('ContactPhone is already taken.')
         except SQLAlchemyError:
             raise DatabaseException
         except Exception:
@@ -99,8 +97,6 @@ class HospitalsDAO(BaseDAO[HospitalModel, HospitalCreateDB, HospitalUpdateDB]):
             if rooms:
                 await cls.update_rooms(session, rooms, hospital)
             return hospital
-        except IntegrityError:
-            raise ConflictUniqueAttribute('ContactPhone is already taken.')
         except SQLAlchemyError:
             raise DatabaseException
         except Exception:

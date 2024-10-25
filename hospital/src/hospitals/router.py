@@ -11,11 +11,14 @@ from src.dependencies import get_current_admin
 from .schemas import HospitalCreate, HospitalUpdate, HospitalResponse, \
     HospitalCreateResponse, RoomResponse
 from .service import HospitalService
+from .. import responses
 
 router = APIRouter()
 
 
-@router.get('', response_model=list[HospitalResponse])
+@router.get('', response_model=list[HospitalResponse], responses={
+    401: responses.full_401
+})
 # @cache(expire=30)
 async def get_list_hospitals(
         offset: int = Query(..., alias='from', ge=0),
@@ -26,7 +29,10 @@ async def get_list_hospitals(
     return await HospitalService.get_list_hospitals(offset, limit, session)
 
 
-@router.get('/{id}', response_model=HospitalResponse)
+@router.get('/{id}', response_model=HospitalResponse, responses={
+    401: responses.full_401,
+    404: responses.hospital_404
+})
 # @cache(expire=30)
 async def get_hospital_info(
         id: uuid.UUID,
@@ -36,7 +42,10 @@ async def get_hospital_info(
     return await HospitalService.get_hospital(id, session)
 
 
-@router.get('/{id}/Rooms', response_model=list[RoomResponse])
+@router.get('/{id}/Rooms', response_model=list[RoomResponse], responses={
+    401: responses.full_401,
+    404: responses.hospital_404
+})
 # @cache(expire=30)
 async def get_hospital_rooms(
         id: uuid.UUID,
@@ -46,7 +55,10 @@ async def get_hospital_rooms(
     return await HospitalService.get_list_rooms(id, session)
 
 
-@router.post('', response_model=HospitalCreateResponse)
+@router.post('', response_model=HospitalCreateResponse, responses={
+    401: responses.full_401,
+    403: responses.full_403
+})
 async def create_hospital(
         data: HospitalCreate,
         session: AsyncSession = Depends(db.get_async_session),
@@ -55,7 +67,11 @@ async def create_hospital(
     return await HospitalService.create_hospital(data, session)
 
 
-@router.put('/{id}', response_model=HospitalCreateResponse)
+@router.put('/{id}', response_model=HospitalCreateResponse, responses={
+    401: responses.full_401,
+    403: responses.full_403,
+    404: responses.hospital_404
+})
 async def update_hospital(
         id: uuid.UUID,
         data: HospitalUpdate,
@@ -65,7 +81,11 @@ async def update_hospital(
     return await HospitalService.update_hospital(id, data, session)
 
 
-@router.delete('/{id}')
+@router.delete('/{id}', responses={
+    401: responses.full_401,
+    403: responses.full_403,
+    404: responses.hospital_404
+})
 async def delete_hospital(
         id: uuid.UUID,
         session: AsyncSession = Depends(db.get_async_session),

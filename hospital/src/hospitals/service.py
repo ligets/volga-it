@@ -7,7 +7,7 @@ from sqlalchemy import and_
 from src.hospitals.dao import HospitalsDAO
 from src.dependencies import delete_timetable_hospital
 from .models import HospitalModel
-from .schemas import HospitalCreate, HospitalCreateDB, HospitalUpdateDB
+from .schemas import HospitalCreate, HospitalCreateDB, HospitalUpdateDB, HospitalUpdate
 
 
 class HospitalService:
@@ -60,7 +60,7 @@ class HospitalService:
         await delete_timetable_hospital(hospital_id)
 
     @classmethod
-    async def update_hospital(cls, hospital_id: uuid.UUID, data: HospitalCreate, session: AsyncSession):
+    async def update_hospital(cls, hospital_id: uuid.UUID, data: HospitalUpdate, session: AsyncSession):
         hospital = await HospitalsDAO.update(
             session,
             and_(
