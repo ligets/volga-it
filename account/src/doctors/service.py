@@ -14,7 +14,7 @@ class DoctorService:
         doctor = await UserDAO.find_one_or_none(session, UserModel.id == doctor_id)
 
         if doctor is None or 'Doctor' not in [role.name for role in doctor.roles]:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Doctor not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Doctor not found.")
 
         return doctor
 

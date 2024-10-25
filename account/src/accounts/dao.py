@@ -24,6 +24,7 @@ class UserDAO(BaseDAO[UserModel, UserCreateDB, UserUpdateDB]):
     ) -> Optional[UserModel]:
         stmt = select(cls.model).options(selectinload(cls.model.roles)).filter(*filters).filter_by(**filter_by)
         result = await session.execute(stmt)
+        # print(result.all())
         return result.scalars().one_or_none()
 
     @classmethod

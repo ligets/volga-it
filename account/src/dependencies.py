@@ -24,7 +24,7 @@ async def validate_token(token: str = Depends(oauth2)):
             algorithms=[settings.auth_jwt.algorithm]
         )
         if decode.get('is_deleted') is True:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has been revoked.")
+            raise InvalidToken
         return token
     except jwt.ExpiredSignatureError:
         raise TokenExpiredException
@@ -43,12 +43,11 @@ async def get_current_user(token: str = Depends(oauth2), session: AsyncSession =
         user_id = payload.get("sub")
         if user_id is None or payload.get('is_deleted') is True:
             raise InvalidToken
-
-        current_user: UserModel = await UserService.get_user(uuid.UUID(user_id), session)
+        current_user: UserModel = await UserService.get_user(user_id, session)
         return current_user
     except jwt.ExpiredSignatureError:
         raise TokenExpiredException
-    except jwt.PyJWTError:
+    except (jwt.PyJWTError, HTTPException):
         raise InvalidToken
 
 

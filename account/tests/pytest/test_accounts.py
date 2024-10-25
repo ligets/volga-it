@@ -15,12 +15,12 @@ async def test_me(ac: AsyncClient):
 
 
 async def test_update(ac: AsyncClient):
-    response = await ac.post("/api/Authentication/SignIn", json={"username": "admin", "password": "admin"})
+    response = await ac.post("/api/Authentication/SignIn", json={"username": "manager", "password": "manager"})
     token = response.json()["access_token"]
     response = await ac.put("/api/Accounts/Update", json={
         "firstName": "new_name",
         "lastName": "new_name",
-        "password": "admin"
+        "password": "manager"
     }, headers={
         "Authorization": f"Bearer {token}"
     })

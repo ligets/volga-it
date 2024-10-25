@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.config import settings
 from src.accounts.dao import UserDAO
 from src.authentication.dao import RefreshSessionDAO
+from src.dependencies import get_current_user
 from src.exceptions.AuthExceptions import InvalidToken, TokenExpiredException, InvalidCredentialsException
 from src.accounts.models import UserModel
 from src.authentication.models import RefreshSessionModel
@@ -14,6 +15,7 @@ from src.authentication.schemas import Token, RefreshSessionCreate, RefreshSessi
 from src.accounts.schemas import UserCreate
 from src.accounts.service import UserService
 from src.authentication.utils import is_valid_password
+from src.database import db
 
 
 class AuthService:
@@ -107,4 +109,9 @@ class AuthService:
     @classmethod
     async def _create_refresh_token(cls) -> str:
         return str(uuid.uuid4())
+
+    @classmethod
+    async def check_valid_token(cls, access_token):
+        async with db.session() as session:
+            await get_current_user(access_token, session)
 

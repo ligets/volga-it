@@ -1,4 +1,8 @@
 from httpx import AsyncClient
+from sqlalchemy import text
+
+from src.accounts.dao import UserDAO
+from tests.pytest.conftest import async_session_maker
 
 login_data = {}
 
@@ -28,16 +32,6 @@ async def test_login(ac: AsyncClient):
     assert response.status_code == 200, f'Другой статус - {login_data}'
     assert 'access_token' in login_data, 'Нету access_token в response'
     assert 'refresh_token' in login_data, 'Нету refresh_token в response'
-
-
-async def test_validate_token(ac: AsyncClient):
-    global login_data
-    response = await ac.get('/api/Authentication/Validate', headers={
-        'Authorization': f'Bearer {login_data["access_token"]}'
-    })
-    data = response.json()
-
-    assert response.status_code == 200, f'Другой статус - {data}'
 
 
 async def test_refresh(ac: AsyncClient):

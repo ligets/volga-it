@@ -9,11 +9,15 @@ from src.database import db
 from src.dependencies import get_current_user
 from src.accounts.schemas import ResponseDoctor
 from .service import DoctorService
+from src import responses
 
 router = APIRouter()
 
 
-@router.get("", response_model=list[ResponseDoctor])
+@router.get("", response_model=list[ResponseDoctor], responses={
+    401: responses.full_401
+
+})
 # @cache(expire=30)
 async def get_doctors_list(
         nameFilter: Optional[str] = None,
@@ -30,7 +34,10 @@ async def get_doctors_list(
     )
 
 
-@router.get("/{id}", response_model=ResponseDoctor)
+@router.get("/{id}", response_model=ResponseDoctor, responses={
+    401: responses.full_401,
+    404: responses.doctor_404
+})
 # @cache(expire=30)
 async def get_doctor_info(
         id: uuid.UUID,
