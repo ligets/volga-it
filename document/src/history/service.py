@@ -28,6 +28,8 @@ class HistoryService:
         history = res["_source"]
         if history["pacientId"] != current_user.get('sub') and 'Doctor' not in current_user.get('roles'):
             raise HTTPException(status_code=403, detail='You are not authorized to view this history.')
+        if not history:
+            raise HTTPException(status_code=404, detail='History not found.')
         return history
 
     @classmethod
@@ -42,7 +44,10 @@ class HistoryService:
                 }
             }
         })
-        return [item['_source'] for item in res['hits']['hits']]
+        result = [item['_source'] for item in res['hits']['hits']]
+        if not result:
+            await validate_pacient(pacient_id)
+        return result
 
     @classmethod
     async def update_history(cls, history_id: uuid.UUID, history: History, session: AsyncSession):

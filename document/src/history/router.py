@@ -17,7 +17,8 @@ router.responses = {
 
 
 @router.get('/Account/{id}', response_model=list[HistoryResponse], responses={
-    403: responses.view_403
+    403: responses.view_403,
+    404: responses.pacient_404
 })
 async def get_account_history(
         id: uuid.UUID,
@@ -27,7 +28,8 @@ async def get_account_history(
 
 
 @router.get('/{id}', response_model=HistoryResponse, responses={
-    403: responses.view_403
+    403: responses.view_403,
+    404: responses.history_404
 })
 async def get_history(
         id: uuid.UUID,

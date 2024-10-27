@@ -68,3 +68,27 @@ validate_404 = {
         }
     }
 }
+
+pacient_404 = {
+    "description": "Resource not found.",
+    "model": ErrorResponseModel,
+    "content": {
+        "application/json": {
+            "example": {
+                "detail": "Pacient not found.",
+            }
+        }
+    }
+}
+
+history_404 = {
+    "description": "Resource not found.",
+    "model": ErrorResponseModel,
+    "content": {
+        "application/json": {
+            "example": {
+                "detail": "History not found.",
+            }
+        }
+    }
+}
