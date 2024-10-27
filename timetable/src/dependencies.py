@@ -46,7 +46,7 @@ async def validate_doctor(doctor_id: uuid.UUID):
     exist_doctor = await doctor_client.call(doctor_id)
 
     if not exist_doctor:
-        raise HTTPException(status_code=404, detail='Doctor not found')
+        raise HTTPException(status_code=404, detail='Doctor not found.')
     return True
 
 

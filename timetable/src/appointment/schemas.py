@@ -22,3 +22,10 @@ class CreateAppointmentsDB(BaseModel):
     user_id: uuid.UUID
     time: datetime
 
+
+class AppointmentsResponse(BaseModel):
+    id: uuid.UUID
+    timetable_id: uuid.UUID
+    user_id: uuid.UUID
+    time: datetime
+

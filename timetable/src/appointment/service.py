@@ -21,12 +21,12 @@ class AppointmentsService:
     ):
         timetable = await TimetableDAO.find_one_or_none(session, TimetableModel.id == timetable_id)
         if not timetable:
-            raise HTTPException(status_code=404, detail='Timetable not found')
+            raise HTTPException(status_code=404, detail='Timetable not found.')
         if not timetable.from_column <= appointment.time < timetable.to:
-            raise HTTPException(status_code=400, detail='Timetable is not available for this time')
+            raise HTTPException(status_code=400, detail='Timetable is not available for this time.')
         lock_appointments = {appoint.time for appoint in timetable.appointments}
         if appointment.time in lock_appointments:
-            raise HTTPException(status_code=409, detail='Appointment already booked')
+            raise HTTPException(status_code=409, detail='Appointment already booked.')
 
         return await AppointmentDAO.add(
             session,
@@ -41,11 +41,11 @@ class AppointmentsService:
     async def delete_appointment(cls, user, appointment_id: uuid.UUID, session: AsyncSession):
         appointment = await AppointmentDAO.find_one_or_none(session, id=appointment_id)
         if not appointment:
-            raise HTTPException(status_code=404, detail='Appointment not found')
+            raise HTTPException(status_code=404, detail='Appointment not found.')
         if str(appointment.user_id) != user.get('sub') and not any(role in ['Admin', 'Manager'] for role in user.get('roles')):
-            raise HTTPException(status_code=403, detail='You are not authorized to delete this appointment')
+            raise HTTPException(status_code=403, detail='You are not authorized to delete this appointment.')
         if appointment.time <= datetime.datetime.now(datetime.timezone.utc):
-            raise HTTPException(status_code=400, detail='Cannot delete a meeting that has started')
+            raise HTTPException(status_code=400, detail='Cannot delete a meeting that has started.')
 
         await AppointmentDAO.delete(session, id=appointment_id)
 

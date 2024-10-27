@@ -25,9 +25,9 @@ class TimetableService:
         await validate_room_hospital(timetable.hospitalId, timetable.room)
         timetable_db = await TimetableDAO.find_one_or_none(session, TimetableModel.id == timetable_id)
         if not timetable_db:
-            raise HTTPException(status_code=404, detail='Timetable not found')
+            raise HTTPException(status_code=404, detail='Timetable not found.')
         if timetable_db.appointments:
-            raise HTTPException(status_code=409, detail='Timetable already has appointments')
+            raise HTTPException(status_code=409, detail='Timetable already has appointments.')
         return await TimetableDAO.update(session, TimetableModel.id == timetable_id, obj_in=timetable)
 
     @classmethod
