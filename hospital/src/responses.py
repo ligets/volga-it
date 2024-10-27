@@ -38,16 +38,3 @@ hospital_404 = {
     }
 }
 
-full_404 = {
-    'description': 'Not Found.',
-    'model': ErrorResponseModel,
-    'content': {
-        'application/json': {
-            'examples': {
-                "hospital_not_fount": {"summary": "Hospital not found.", "value": {"detail": "Hospital not found."}},
-                "room_not_found": {"summary": "Room not found.", "value": {"detail": "Room not found."}}
-            }
-        }
-    }
-}
-

@@ -50,7 +50,7 @@ async def validate_pacient(pacient_id: uuid.UUID):
     exist_pacient = await pacient_client.call(pacient_id)
 
     if not exist_pacient:
-        raise HTTPException(status_code=404, detail='Pacient not found')
+        raise HTTPException(status_code=404, detail='Pacient not found.')
     return True
 
 
@@ -59,5 +59,5 @@ async def validate_doctor(doctor_id: uuid.UUID):
     exist_doctor = await doctor_client.call(doctor_id)
 
     if not exist_doctor:
-        raise HTTPException(status_code=404, detail='Doctor not found')
+        raise HTTPException(status_code=404, detail='Doctor not found.')
     return True
